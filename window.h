@@ -1,13 +1,15 @@
-#include <SDL.h>
-#include <SDL_image.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 #include <string>
 #include <vector>
+#include <array>
 
 class ImageData{
 public:
-	unsigned char* pix_data;
+	SDL_Surface* image_surface; //I settled down at using SDL_Surface
+								//will always be ARGB8888
+								//convenient solution, no direct way to work with pixels buffer
 	int x_pos, y_pos, height, width;
-	bool is_ok;
 
 	ImageData(SDL_Surface* image_surface, int x_pos, int y_pos,
 		int height, int width);
@@ -24,8 +26,11 @@ class Window{
 public:
 	Window(int height, int width, std::string title = "CUDA Test");
 
+	Window& add_image(const std::string&, int, int, int, int);
 	template <std::size_t R, std::size_t C>
-	Window& add_image(std::array<unsigned char, R*C> bytes, int x, int y, int h, int w);
+	Window& add_image(const std::array<unsigned char, R*C>&, int, int);
+
+	void show();
 
 	~Window();
 };
