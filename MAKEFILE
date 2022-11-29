@@ -1,0 +1,9 @@
+CC="cl"
+CFLAGS=
+SOURCE=test.cpp
+LFLAGS=/entry:main /subsystem:console /machine:x64
+#LIBPATH="/libpath:\"C:/Program Files (x86)/Windows Kits/10/Lib/10.0.10240.0/ucrt/x86\""
+LIBS=libucrt.lib SDL2.lib SDL2main.lib
+
+all : test.cpp
+	$(CC) $(SOURCE) $(CFLAGS) /link $(LFLAGS) $(LIBS)
