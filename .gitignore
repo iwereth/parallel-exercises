@@ -32,8 +32,8 @@
 *.app
 
 #Images
-.tiff
-.png
-.img
-.bmp
-.raw
+*.tiff
+*.png
+*.img
+*.bmp
+*.raw

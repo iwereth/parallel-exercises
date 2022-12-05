@@ -17,7 +17,7 @@ Window::Window(int height, int width, std::string title):
 
 	char* title_d = const_cast<char*>(title.data());
 	main_window = SDL_CreateWindow(title_d, SDL_WINDOWPOS_UNDEFINED,
-		SDL_WINDOWPOS_UNDEFINED, height, width, SDL_WINDOW_SHOWN);
+		SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_SHOWN);
 
 	if(main_window == nullptr){
 		err_string = SDL_GetError();
