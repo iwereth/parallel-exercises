@@ -23,13 +23,15 @@ class Window{
 	std::vector<ImageData*> images;
 	SDL_PixelFormat form;
 
+	void error(const std::string& str);
+
 public:
 	Window(int height, int width, std::string title = "CUDA Test");
 
 	Window& add_image(const std::string&, int x, int y, int h, int w);
-	template <std::size_t R, std::size_t C>
-	Window& add_image(const std::array<unsigned char, R*C>&, int, int);
+	Window& add_image(const unsigned char* bytes, int x , int y, int h , int w);
 
+	std::vector<ImageData*>& get_images(); 
 	void show();
 
 	~Window();
