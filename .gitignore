@@ -31,6 +31,9 @@
 *.out
 *.app
 
+#Executable support files
+*.pdb
+
 #Images
 *.tiff
 *.png

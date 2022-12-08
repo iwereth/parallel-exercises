@@ -3,8 +3,13 @@ LIBS=SDL2,SDL2main,SDL2_image
 INCLUDE_PATH=include
 SOURCE=src
 
-lena_bw.exe : $(SOURCE)/cuda/lena_bw.cu $(SOURCE)/c++/window.cpp
-	$(NVCC) $** --include-path $(INCLUDE_PATH) --library $(LIBS) --output-file $@
+#added deprecation option because I ran this on a GT 610 with 
+#compute capability 2.1 with CUDA Toolkit 8.1
+lena_bw : $(SOURCE)/cuda/lena.cu $(SOURCE)/c++/window.cpp
+	$(NVCC) --define-macro BW --debug --Wno-deprecated-gpu-targets $** --include-path $(INCLUDE_PATH) --library $(LIBS) --output-file $@.exe
+
+lena_blur : $(SOURCE)/cuda/lena.cu $(SOURCE)/c++/window.cpp
+	$(NVCC) --define-macro BLUR --debug --Wno-deprecated-gpu-targets $** --include-path $(INCLUDE_PATH) --library $(LIBS) --output-file $@.exe
 
 clean:
 	del window.obj lena_bw.lib lena_bw.exp

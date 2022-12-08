@@ -10,9 +10,10 @@ public:
 								//will always be ARGB8888
 								//convenient solution, no direct way to work with pixels buffer
 	int x_pos, y_pos, height, width;
+	bool source_sdl;
 
 	ImageData(SDL_Surface* image_surface, int x_pos, int y_pos,
-		int height, int width);
+		int height, int width, bool source_sdl);
 };
 
 class Window{
@@ -31,8 +32,8 @@ public:
 	Window& add_image(const std::string&, int x, int y, int h, int w);
 	Window& add_image(const unsigned char* bytes, int x , int y, int h , int w);
 
-	std::vector<ImageData*>& get_images(); 
-	void show();
+	std::vector<ImageData*>& get_images(void); 
+	void show(void);
 
 	~Window();
 };

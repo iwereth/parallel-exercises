@@ -8,8 +8,8 @@
 #include <c++/window.hpp>
 
 ImageData::ImageData(SDL_Surface* image_surface, int x_pos, int y_pos,
-	int height, int width) : image_surface(image_surface), x_pos(x_pos),
-	y_pos(y_pos), height(height), width(width){}
+	int height, int width, bool source_sdl) : image_surface(image_surface), x_pos(x_pos),
+	y_pos(y_pos), height(height), width(width), source_sdl(source_sdl){}
 
 
 void Window::error(const std::string& str){
@@ -50,7 +50,7 @@ Window& Window::add_image(const std::string& filename, int x, int y, int h, int 
 		}
 	}
 
-	ImageData* d = new ImageData(image_surface, x, y, h, w);
+	ImageData* d = new ImageData(image_surface, x, y, h, w, true);
 	images.push_back(d);
 	return *this;
 }
@@ -84,30 +84,37 @@ Window& Window::add_image(const unsigned char* bytes , int x , int y, int h, int
 		w*SDL_BYTESPERPIXEL(format), SDL_PIXELFORMAT_ARGB8888);
 
 	if(image_surface == NULL){
-		error("Error in add_image: Cannot convert surface from pixels");
+		error("Error in add_image: Cannot convert to surface from pixels");
 	}
 
-	images.push_back(new ImageData(image_surface,x,y,h,w));
+	images.push_back(new ImageData(image_surface,x,y,h,w,false));
 	return *this;
 }
 
-void Window::show(){
+void Window::show(void){
 	for(auto image : images){
 		SDL_Rect rect = {image->x_pos, image->y_pos, image->width, image->height};
-		SDL_BlitScaled(image->image_surface, NULL, main_surface, &rect);
+		if(SDL_BlitScaled(image->image_surface, NULL, main_surface, &rect) < 0){
+			error(SDL_GetError());
+		}
 	}
 	SDL_UpdateWindowSurface(main_window);
 }
 
-std::vector<ImageData*>& Window::get_images(){
+std::vector<ImageData*>& Window::get_images(void){
 	return images;
 }
 
 Window::~Window(){
 	for(auto x : images){
-		auto t = static_cast<unsigned char*> (x->image_surface->pixels);
+		unsigned char* t = nullptr;
+		if(x->source_sdl == false)
+			auto t = static_cast<unsigned char*> (x->image_surface->pixels);
 		SDL_FreeSurface(x->image_surface);
 		delete x;
 		delete[] t;
 	}
+	SDL_FreeSurface(main_surface);
+	SDL_DestroyWindow(main_window);
+	SDL_Quit();
 }

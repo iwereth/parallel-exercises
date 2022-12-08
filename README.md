@@ -9,11 +9,12 @@ Repository for the stuffs I made while learning to program with parallel process
 
 ## Modules
 **lena_bw** does a grayscale conversion on a color tiff file of 512 x 512 resolution (not shared in repo right now) named "lena_color.tiff" in the directory with executable
+**lena_blur** does a box blur conversion on a color tiff file of 512 x 512 resolution named "lena_color.tiff" in the directory with executable
 
 ## How to run
 ### Windows 10/11
 ```
-#set up environment variables in MSVC, consider vcvarsall
+#set up environment variables for MSVC's cl, consider vcvarsall
 nmake <module_name> 
-<module_name>.exe
+<module_name>
 ```
