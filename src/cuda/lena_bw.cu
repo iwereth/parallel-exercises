@@ -15,10 +15,10 @@ const size_t SCREEN_WIDTH = 1024;
 const size_t SCREEN_HEIGHT = 512;
 
 struct pixels {
-	unsigned char a;
-	unsigned char r;
-	unsigned char g;
 	unsigned char b;
+	unsigned char g;
+	unsigned char r;
+	unsigned char a;
 };
 
 //making sure that the pixel format is ARGB8888
