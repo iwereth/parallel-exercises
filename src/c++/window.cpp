@@ -3,13 +3,15 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 //new libraries
 #include <c++/window.hpp>
 
 ImageData::ImageData(SDL_Surface* image_surface, int x_pos, int y_pos,
-	int height, int width, bool source_sdl) : image_surface(image_surface), x_pos(x_pos),
-	y_pos(y_pos), height(height), width(width), source_sdl(source_sdl){}
+	int r_height, int r_width, bool source_sdl) : image_surface(image_surface), x_pos(x_pos),
+	y_pos(y_pos), r_height(r_height), r_width(r_width), source_sdl(source_sdl), height(image_surface->h), width(image_surface->w){
+	}
 
 
 void Window::error(const std::string& str){
@@ -39,7 +41,7 @@ Window::Window(int height, int width, std::string title):
 	is_initialized = true;
 }
 
-Window& Window::add_image(const std::string& filename, int x, int y, int h, int w){
+ImageData& Window::add_image(const std::string& filename, int x, int y, int h, int w){
 
 	SDL_Surface* image_surface  = IMG_Load(const_cast<char*>(filename.c_str()));
 
@@ -50,9 +52,18 @@ Window& Window::add_image(const std::string& filename, int x, int y, int h, int 
 		}
 	}
 
-	ImageData* d = new ImageData(image_surface, x, y, h, w, true);
+	float scale = std::min((float)h/image_surface->h, (float)w/image_surface->w);
+
+	//new resolutions
+	int nh = scale * image_surface->h;
+	int nw = scale * image_surface->w;
+
+	int nx = x + std::max((w - nw)/2,0);
+	int ny = y + std::max((h - nh)/2,0);
+
+	ImageData* d = new ImageData(image_surface, nx, ny, nh, nw, true);
 	images.push_back(d);
-	return *this;
+	return *images.back();
 }
 
 
@@ -73,27 +84,36 @@ Window& Window::add_image(const std::array<unsigned char, R*C>& bytes, int x, in
 	return *this;
 }*/
 
-Window& Window::add_image(const unsigned char* bytes , int x , int y, int h, int w){
-	unsigned char* pixels = new unsigned char[4*h*w];
-	std::memcpy(pixels, bytes, 4*h*w*sizeof(unsigned char));
+ImageData& Window::add_image(const unsigned char* bytes , int bh, int bw, int x , int y, int h, int w){
+	unsigned char* pixels = new unsigned char[4*bh*bw];
+	std::memcpy(pixels, bytes, 4*bh*bw*sizeof(unsigned char));
 
 	auto format = SDL_PIXELFORMAT_ARGB8888;
 
 	SDL_Surface* image_surface = SDL_CreateRGBSurfaceWithFormatFrom(
-		static_cast<void*>(pixels), w, h, SDL_BITSPERPIXEL(format), 
-		w*SDL_BYTESPERPIXEL(format), SDL_PIXELFORMAT_ARGB8888);
+		static_cast<void*>(pixels), bw, bh, SDL_BITSPERPIXEL(format), 
+		bw*SDL_BYTESPERPIXEL(format), SDL_PIXELFORMAT_ARGB8888);
 
 	if(image_surface == NULL){
 		error("Error in add_image: Cannot convert to surface from pixels");
 	}
 
-	images.push_back(new ImageData(image_surface,x,y,h,w,false));
-	return *this;
+	float scale = std::min((float)h/image_surface->h, (float)w/image_surface->w);
+
+	//new resolutions
+	int nh = scale * image_surface->h;
+	int nw = scale * image_surface->w;
+
+	int nx = x + std::max((w - nw)/2,0);
+	int ny = y + std::max((h - nh)/2,0);
+
+	images.push_back(new ImageData(image_surface,nx,ny,nh,nw,false));
+	return *images.back();
 }
 
 void Window::show(void){
 	for(auto image : images){
-		SDL_Rect rect = {image->x_pos, image->y_pos, image->width, image->height};
+		SDL_Rect rect = {image->x_pos, image->y_pos, image->r_width, image->r_height};
 		if(SDL_BlitScaled(image->image_surface, NULL, main_surface, &rect) < 0){
 			error(SDL_GetError());
 		}

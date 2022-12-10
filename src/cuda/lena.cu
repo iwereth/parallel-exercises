@@ -11,7 +11,7 @@
 //new libraries
 #include <c++/window.hpp>
 
-const size_t SCREEN_WIDTH = 1024;
+const size_t SCREEN_WIDTH = 1000;
 const size_t SCREEN_HEIGHT = 512;
 
 struct pixels {
@@ -86,10 +86,10 @@ int main(){
 	//hardcoding these values for demo
 	//TODO: make the resolution to-fit algorithmically
 	constexpr size_t row = 512, col = 512;
-	constexpr size_t image_size = sizeof(pixels)*row*col;
+	constexpr size_t image_size = 4*row*col;
 
 	Window win(SCREEN_HEIGHT,SCREEN_WIDTH);
-	win.add_image("lena_color.tiff", 0,0,row,col);
+	win.add_image("lena_color.tiff", 0,0,512,500);
 
 	win.show();
 	SDL_Delay(1000);
@@ -117,7 +117,7 @@ int main(){
 	//using raw continuous bytes for allocation, C style code but eh
 	auto bytes = new unsigned char[image_size];
 	cudaMemcpy(bytes,d_out,image_size, cudaMemcpyDeviceToHost);
-	win.add_image(bytes, 512,0,512,512);
+	win.add_image(bytes,512,512,500,0,512,500);
 	win.show();
 
 	cudaFree(d_in); cudaFree(d_out);
